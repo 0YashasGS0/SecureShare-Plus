@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Secure Note | SecureShare+</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html"
+                    style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="logo-icon">🔒</span>
+                    <span class="logo-text">SecureShare+</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <section class="view-note-section">
+        <div class="view-container">
+
+            <!-- Loading State -->
+            <div id="loadingState" class="state-card">
+                <div class="loader"></div>
+                <h2>Loading Secure Note...</h2>
+                <p>Verifying link and checking permissions</p>
+            </div>
+
+            <!-- Biometric Verification State -->
+            <div id="biometricState" class="state-card" style="display: none;">
+                <div class="biometric-prompt">
+                    <span class="prompt-icon">🔐</span>
+                    <h2>Biometric Verification Required</h2>
+                    <p>This note is protected. Please verify your identity to access.</p>
+
+                    <div class="verification-info">
+                        <div class="info-badge">
+                            <span>⏱️</span>
+                            <div>
+                                <strong>Expires In</strong>
+                                <span id="expiryCountdown">--</span>
+                            </div>
+                        </div>
+                        <div class="info-badge">
+                            <span>🔢</span>
+                            <div>
+                                <strong>Attempts Left</strong>
+                                <span id="attemptsLeft">3</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="verifyBiometricBtn" class="btn btn-primary btn-block btn-large">
+                        <span class="btn-icon">👆</span>
+                        Verify with Biometrics
+                    </button>
+
+                    <div class="security-notice">
+                        <span class="notice-icon">⚠️</span>
+                        <p><strong>Warning:</strong> This note may self-destruct after viewing. Make sure you're ready
+                            to read it.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Note Content State -->
+            <div id="noteContentState" class="state-card note-display" style="display: none;">
+                <div class="note-header">
+                    <div class="note-title">
+                        <span class="title-icon">📝</span>
+                        <h2>Confidential Message</h2>
+                    </div>
+                    <div class="note-badges">
+                        <span class="badge badge-encrypted">🔒 Encrypted</span>
+                        <span class="badge badge-verified">✅ Verified</span>
+                    </div>
+                </div>
+
+                <div class="note-content-box">
+                    <pre id="noteContent" class="note-text"></pre>
+                </div>
+
+                <div class="note-actions">
+                    <button id="copyNoteBtn" class="btn btn-secondary">
+                        📋 Copy to Clipboard
+                    </button>
+                    <button id="closeNoteBtn" class="btn btn-primary">
+                        ✓ I've Read This
+                    </button>
+                </div>
+
+                <div id="destructCountdown" class="destruct-warning" style="display: none;">
+                    <div class="warning-content">
+                        <span class="warning-icon">🔥</span>
+                        <div>
+                            <strong>Self-Destructing</strong>
+                            <p>This note will be permanently deleted in <span id="destructTimer">5</span> seconds...</p>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="destructProgress" class="progress-fill"></div>
+                    </div>
+                </div>
+
+                <div class="note-info">
+                    <div class="info-row">
+                        <span class="info-label">🔐 Encryption:</span>
+                        <span class="info-value">AES-256-GCM</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">⏱️ Viewed At:</span>
+                        <span class="info-value" id="viewedTime"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">🔥 View Once:</span>
+                        <span class="info-value" id="viewOnceStatus">Active</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error State -->
+            <div id="errorState" class="state-card error-card" style="display: none;">
+                <span class="error-icon">❌</span>
+                <h2 id="errorTitle">Access Denied</h2>
+                <p id="errorMessage">This note is no longer available.</p>
+
+                <div class="error-reasons">
+                    <h4>Possible Reasons:</h4>
+                    <ul>
+                        <li>Note has expired</li>
+                        <li>Already viewed (view-once enabled)</li>
+                        <li>Maximum attempts exceeded</li>
+                        <li>Invalid or tampered link</li>
+                    </ul>
+                </div>
+
+                <a href="index.html" class="btn btn-secondary">
+                    Return to Home
+                </a>
+            </div>
+
+            <!-- Destroyed State -->
+            <div id="destroyedState" class="state-card destroyed-card" style="display: none;">
+                <div class="destruction-animation">
+                    <span class="destruction-icon">💥</span>
+                </div>
+                <h2>Note Destroyed</h2>
+                <p>This message has been permanently deleted and cannot be recovered.</p>
+
+                <div class="destruction-info">
+                    <p>✅ No copies remain on the server</p>
+                    <p>✅ Encryption keys have been discarded</p>
+                    <p>✅ Access logs show this viewing only</p>
+                </div>
+
+                <a href="create-note.html" class="btn btn-primary">
+                    Create New Note
+                </a>
+            </div>
+
+            <!-- Face Verify Modal (Hidden) -->
+            <div id="faceVerifyModal" class="modal"
+                style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; justify-content: center; align-items: center;">
+                <div class="modal-content"
+                    style="background: var(--bg-card); padding: 2rem; border-radius: 12px; width: 90%; max-width: 500px; text-align: center;">
+                    <h3>👤 Face Verification Required</h3>
+                    <p style="margin-bottom: 1rem;">The sender has locked this note with a face.</p>
+
+                    <div class="video-container"
+                        style="position: relative; width: 100%; height: 300px; background: #000; border-radius: 8px; overflow: hidden; margin-bottom: 1rem;">
+                        <video id="faceVerifyVideo" autoplay playsinline muted
+                            style="width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1);"></video>
+                        <div class="face-overlay"
+                            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 2px dashed rgba(255,255,255,0.7); width: 200px; height: 250px; border-radius: 50%;">
+                        </div>
+                    </div>
+
+                    <div id="faceMatchStatus" style="height: 20px; margin-bottom: 1rem; color: var(--text-muted);">
+                    </div>
+
+                    <div class="modal-actions" style="display: flex; gap: 1rem; justify-content: center;">
+                        <button type="button" id="verifyFaceBtn" class="btn btn-primary">📸 Verify My Face</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/crypto.js"></script>
+    <script src="js/biometric.js"></script>
+    <script src="js/face-auth.js"></script>
+    <script src="js/view-note.js"></script>
+</body>
+
+</html>

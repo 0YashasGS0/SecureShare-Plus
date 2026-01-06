@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Secure Note | SecureShare+</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html"
+                    style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="logo-icon">🔒</span>
+                    <span class="logo-text">SecureShare+</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="create-note.html" class="nav-link active">Create Note</a>
+                <a href="index.html" class="nav-link">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <section class="create-note-section">
+        <div class="create-container">
+            <!-- Left Panel - Note Creation -->
+            <div class="note-panel">
+                <div class="panel-header">
+                    <h1>📝 Create Secure Note</h1>
+                    <p>Your note will be encrypted before leaving your device</p>
+                </div>
+
+                <form id="createNoteForm">
+                    <!-- Note Content -->
+                    <div class="form-group">
+                        <label for="noteContent">Confidential Message</label>
+                        <textarea id="noteContent" name="noteContent"
+                            placeholder="Enter passwords, sensitive information, or any confidential message..."
+                            rows="8" required></textarea>
+                        <small class="char-counter">
+                            <span id="charCount">0</span> characters
+                        </small>
+                    </div>
+
+                    <!-- Recipient Email -->
+                    <div class="form-group">
+                        <label for="recipientEmail">
+                            Recipient Email (Optional)
+                            <span class="help-icon" title="Leave empty for anyone with link">ℹ️</span>
+                        </label>
+                        <input type="email" id="recipientEmail" placeholder="recipient@example.com">
+                        <small class="form-hint">Only this email can access the note</small>
+                    </div>
+
+                    <!-- Access Controls -->
+                    <div class="controls-grid">
+                        <!-- Expiry Time -->
+                        <div class="form-group">
+                            <label for="expiryTime">Expires In</label>
+                            <select id="expiryTime">
+                                <option value="10">10 minutes</option>
+                                <option value="60">1 hour</option>
+                                <option value="360">6 hours</option>
+                                <option value="1440" selected>24 hours</option>
+                                <option value="4320">3 days</option>
+                                <option value="10080">7 days</option>
+                            </select>
+                        </div>
+
+                        <!-- Attempt Limit -->
+                        <div class="form-group">
+                            <label for="attemptLimit">Max Attempts</label>
+                            <select id="attemptLimit">
+                                <option value="1">1 attempt</option>
+                                <option value="3" selected>3 attempts</option>
+                                <option value="5">5 attempts</option>
+                                <option value="999">Unlimited</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- View Once Toggle -->
+                    <div class="toggle-group">
+                        <label class="toggle-label">
+                            <input type="checkbox" id="viewOnce" name="viewOnce">
+                            <span class="toggle-slider"></span>
+                            <div class="toggle-text">
+                                <strong>🔥 Burn After Reading</strong>
+                                <small>Note self-destructs after first view</small>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Face Verification Toggle -->
+                    <div class="toggle-group" style="margin-top: 1rem;">
+                        <label class="toggle-label">
+                            <input type="checkbox" id="requireFaceAuth" name="requireFaceAuth">
+                            <span class="toggle-slider"></span>
+                            <div class="toggle-text">
+                                <strong>👤 Require Face Verification</strong>
+                                <small>Recipient must match your face to unlock</small>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Face Capture Modal (Hidden) -->
+                    <div id="faceCaptureModal" class="modal"
+                        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
+                        <div class="modal-content"
+                            style="background: var(--bg-card); padding: 2rem; border-radius: 12px; width: 90%; max-width: 500px; text-align: center;">
+                            <h3>👤 Capture Reference Face</h3>
+                            <p style="margin-bottom: 1rem;">Position your face in the frame</p>
+
+                            <div class="video-container"
+                                style="position: relative; width: 100%; height: 300px; background: #000; border-radius: 8px; overflow: hidden; margin-bottom: 1rem;">
+                                <video id="faceVideo" autoplay playsinline muted
+                                    style="width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1);"></video>
+                                <div class="face-overlay"
+                                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 2px dashed rgba(255,255,255,0.7); width: 200px; height: 250px; border-radius: 50%;">
+                                </div>
+                            </div>
+
+                            <div class="modal-actions" style="display: flex; gap: 1rem; justify-content: center;">
+                                <button type="button" id="cancelFaceBtn" class="btn btn-secondary">Cancel</button>
+                                <button type="button" id="captureFaceBtn" class="btn btn-primary">📸 Capture
+                                    Face</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Encrypt & Generate Link Button -->
+                    <button type="submit" class="btn btn-primary btn-block btn-large">
+                        <span class="btn-icon">🔐</span>
+                        Encrypt & Generate Link
+                    </button>
+                </form>
+
+                <!-- Link Result (Hidden Initially) -->
+                <div id="linkResult" class="link-result" style="display: none;">
+                    <div class="success-banner">
+                        <span class="success-icon">✅</span>
+                        <div>
+                            <h3>Secure Link Generated!</h3>
+                            <p>Share this link with your recipient</p>
+                        </div>
+                    </div>
+
+                    <div class="link-box">
+                        <input type="text" id="generatedLink" readonly class="link-input">
+                        <button id="copyLinkBtn" class="btn-copy">
+                            📋 Copy
+                        </button>
+                    </div>
+
+                    <div class="link-info">
+                        <div class="info-row">
+                            <span class="info-label">🔒 Encryption:</span>
+                            <span class="info-value">AES-256-GCM</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">⏱️ Expires:</span>
+                            <span class="info-value" id="expiryDisplay"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">👁️ View Once:</span>
+                            <span class="info-value" id="viewOnceDisplay"></span>
+                        </div>
+                    </div>
+
+                    <button id="createAnotherBtn" class="btn btn-secondary btn-block">
+                        Create Another Note
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Panel - Security Info -->
+            <div class="info-sidebar">
+                <div class="security-badge">
+                    <span class="badge-icon">🛡️</span>
+                    <h3>How It Works</h3>
+                </div>
+
+                <div class="security-step">
+                    <div class="step-icon">1️⃣</div>
+                    <div>
+                        <h4>Write Your Message</h4>
+                        <p>Enter any confidential information you need to share securely.</p>
+                    </div>
+                </div>
+
+                <div class="security-step">
+                    <div class="step-icon">2️⃣</div>
+                    <div>
+                        <h4>Encrypted in Browser</h4>
+                        <p>Your note is encrypted using AES-256 before leaving your device. Server never sees plaintext.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="security-step">
+                    <div class="step-icon">3️⃣</div>
+                    <div>
+                        <h4>Generate Secure Link</h4>
+                        <p>A unique link is created with the decryption key in the URL fragment (never sent to server).
+                        </p>
+                    </div>
+                </div>
+
+                <div class="security-step">
+                    <div class="step-icon">4️⃣</div>
+                    <div>
+                        <h4>Share & Self-Destruct</h4>
+                        <p>Recipient opens link, verifies biometrics, views once, and note is permanently deleted.</p>
+                    </div>
+                </div>
+
+                <div class="security-features">
+                    <h4>🔐 Security Features</h4>
+                    <ul>
+                        <li>✅ End-to-end encryption</li>
+                        <li>✅ Zero-knowledge architecture</li>
+                        <li>✅ Time-limited access</li>
+                        <li>✅ Biometric verification</li>
+                        <li>✅ Auto-deletion after view</li>
+                        <li>✅ No server-side decryption</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/crypto.js"></script>
+    <script src="js/face-auth.js"></script>
+    <script src="js/create-note.js"></script>
+</body>
+
+</html>
