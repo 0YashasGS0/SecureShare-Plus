@@ -66,16 +66,6 @@ CREATE TABLE IF NOT EXISTS AccessLogs (
 );
 
 -- Trigger: Auto-delete notes after view (if ViewOnce = TRUE)
-DELIMITER //
-CREATE TRIGGER after_note_view
-AFTER UPDATE ON Notes
-FOR EACH ROW
-BEGIN
-    IF NEW.ViewCount >= 1 AND NEW.ViewOnce = TRUE THEN
-        UPDATE Notes SET IsDeleted = TRUE WHERE NoteID = NEW.NoteID;
-    END IF;
-END //
-DELIMITER ;
 
 -- Sample data for testing (optional)
 -- INSERT INTO Users (Email, Name, PasswordHash) VALUES 

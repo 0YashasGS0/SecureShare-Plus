@@ -90,7 +90,8 @@ async function loadNoteMetadata(noteId) {
     showState('loadingState');
 
     try {
-        const response = await fetch(`/api/notes/${noteId}`, {
+        // FETCH METADATA ONLY (PREVIEW MODE) to avoid burning the note
+        const response = await fetch(`/api/notes/${noteId}?type=preview`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -113,8 +114,8 @@ async function loadNoteMetadata(noteId) {
 
         noteData = {
             noteId: noteId,
-            encryptedContent: data.encryptedContent,
-            iv: data.iv,
+            encryptedContent: null, // Will be fetched after verification
+            iv: null, // Will be fetched after verification
             recipientEmail: null,
             expiryTime: new Date(data.expiryTime),
             attemptLimit: maxViews,
@@ -128,7 +129,7 @@ async function loadNoteMetadata(noteId) {
             throw new Error('This note has expired and is no longer available.');
         }
 
-        console.log('📦 Note metadata loaded:', noteData);
+        console.log('📦 Note metadata loaded (Preview):', noteData);
 
     } catch (error) {
         throw error;
@@ -293,6 +294,26 @@ async function verifyAndDecrypt(keyBase64) {
         }
 
         showToast('✅ Identity verified', 'success');
+
+        // NEW: Fetch the actual content now that we are verified.
+        // This is the point of no return for "Burn After Reading".
+        console.log('📥 Fetching encrypted content...');
+        const token = localStorage.getItem('authToken');
+        const contentResponse = await fetch(`/api/notes/${noteData.noteId}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!contentResponse.ok) {
+            const errData = await contentResponse.json();
+            throw new Error(errData.error || 'Failed to retrieve note content. It may have been deleted.');
+        }
+
+        const contentData = await contentResponse.json();
+
+        // Update noteData with the actual content
+        noteData.encryptedContent = contentData.encryptedContent;
+        noteData.iv = contentData.iv;
+        // Optionally update other fields if they changed (viewCount etc)
 
         // Import encryption key
         const cryptoKey = await importKey(keyBase64);

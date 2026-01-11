@@ -28,25 +28,41 @@ exports.createNote = async (req, res) => {
 
 exports.getNote = async (req, res) => {
   const { id } = req.params;
+  const { type } = req.query; // Check for query parameter
+
   try {
     const [rows] = await pool.query("SELECT * FROM Notes WHERE NoteID=? AND IsDeleted=FALSE", [id]);
     if (rows.length === 0) return res.status(404).json({ error: "Note not found or deleted" });
     const note = rows[0];
     if (new Date() > note.ExpiryTime) return res.status(410).json({ error: "Note expired" });
 
-    // UPDATE: Increment view count and check limits
+    // PREVIEW MODE: Just return metadata, don't increment view count or burn
+    if (type === 'preview') {
+      console.log(`[DEBUG] Preview fetch for ${id}. ViewCount: ${note.ViewCount}`);
+      return res.json({
+        viewOnce: note.ViewOnce,
+        expiryTime: note.ExpiryTime,
+        maxViews: note.MaxViews,
+        viewCount: note.ViewCount,
+        // Do NOT return EncryptedContent or IV here
+      });
+    }
+
+    console.log(`[DEBUG] Full fetch for ${id}. Query Type: ${type}`);
+    console.log(`[DEBUG] DB Note State: ViewOnce=${note.ViewOnce} (Type: ${typeof note.ViewOnce}), MaxViews=${note.MaxViews}, ViewCount=${note.ViewCount}`);
+
+    // FULL ACCESS MODE: Increment view count and check limits
     // We increment the view count in the database
     await pool.query("UPDATE Notes SET ViewCount = ViewCount + 1 WHERE NoteID=?", [id]);
 
     // Check if we need to self-destruct (ViewOnce or MaxViews reached)
-    // Note: We use the *current* fetched note data to decide, but we must account for the increment we just did.
-    // If ViewOnce is true, this is the one and only view.
-    // If MaxViews is set, check if current ViewCount + 1 >= MaxViews.
     const currentViewCount = note.ViewCount + 1;
-    // Fix: Use loose equality or truthiness check for ViewOnce since MySQL driver return types can vary
-    const shouldDelete = (!!note.ViewOnce) || (note.MaxViews > 0 && currentViewCount >= note.MaxViews);
+    // Fix: Strict check for ViewOnce to handle MySQL data types correctly (TinyInt(1) typically returns 1 or 0)
+    // Also handle possible Buffer or boolean return
+    const isViewOnce = (note.ViewOnce === 1 || note.ViewOnce === true || (Buffer.isBuffer(note.ViewOnce) && note.ViewOnce[0] === 1));
+    const shouldDelete = isViewOnce || (note.MaxViews > 0 && currentViewCount >= note.MaxViews);
 
-    console.log(`[DEBUG] NoteID: ${id}, ViewOnce: ${note.ViewOnce}, MaxViews: ${note.MaxViews}, CurrentViewCount: ${currentViewCount}, ShouldDelete: ${shouldDelete}`);
+    console.log(`[DEBUG] NoteID: ${id}, ViewOnceVal: ${note.ViewOnce}, IsViewOnce: ${isViewOnce}, MaxViews: ${note.MaxViews}, CurrentViewCount: ${currentViewCount}, ShouldDelete: ${shouldDelete}`);
 
     if (shouldDelete) {
       // Mark as deleted for future requests
