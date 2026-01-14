@@ -1,20 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline';">
-    <title>Register | SecureShare+</title>
+    <title>Register | PrivNote+</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="logo">
-                <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
-                    <span class="logo-icon">🔒</span>
-                    <span class="logo-text">SecureShare+</span>
+                <a href="index.html"
+                    style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="logo-icon">🔐</span>
+                    <span class="logo-text">PrivNote+</span>
                 </a>
             </div>
             <div class="nav-links">
@@ -39,50 +42,28 @@
                     <!-- Name Field -->
                     <div class="form-group">
                         <label for="name">Full Name</label>
-                        <input 
-                            type="text" 
-                            id="name" 
-                            name="name" 
-                            placeholder="Enter your full name"
-                            required
-                        >
+                        <input type="text" id="name" name="name" placeholder="Enter your full name" required>
                     </div>
 
                     <!-- Email Field -->
                     <div class="form-group">
                         <label for="email">Email Address</label>
-                        <input 
-                            type="email" 
-                            id="email" 
-                            name="email" 
-                            placeholder="your.email@example.com"
-                            required
-                        >
+                        <input type="email" id="email" name="email" placeholder="your.email@example.com" required>
                     </div>
 
                     <!-- Password Field -->
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <input 
-                            type="password" 
-                            id="password" 
-                            name="password" 
-                            placeholder="Create a strong password"
-                            required
-                        >
+                        <input type="password" id="password" name="password" placeholder="Create a strong password"
+                            required>
                         <small class="form-hint">Minimum 8 characters, include letters and numbers</small>
                     </div>
 
                     <!-- Confirm Password Field -->
                     <div class="form-group">
                         <label for="confirmPassword">Confirm Password</label>
-                        <input 
-                            type="password" 
-                            id="confirmPassword" 
-                            name="confirmPassword" 
-                            placeholder="Re-enter your password"
-                            required
-                        >
+                        <input type="password" id="confirmPassword" name="confirmPassword"
+                            placeholder="Re-enter your password" required>
                     </div>
 
                     <!-- Biometric Enrollment Section -->
@@ -94,12 +75,7 @@
                                 <p>Enroll your fingerprint or Face ID for secure access</p>
                             </div>
                         </div>
-                        <button 
-                            type="button" 
-                            id="enrollBiometricBtn" 
-                            class="btn-biometric"
-                            disabled
-                        >
+                        <button type="button" id="enrollBiometricBtn" class="btn-biometric" disabled>
                             <span class="btn-icon">🔐</span>
                             Enroll Biometrics
                         </button>
@@ -151,4 +127,5 @@
     <script src="js/biometric.js"></script>
     <script src="js/register.js"></script>
 </body>
+
 </html>

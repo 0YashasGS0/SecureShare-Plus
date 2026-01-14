@@ -42,7 +42,7 @@ app.use((req, res, next) => {
 app.get('/api/health', (req, res) => {
     res.json({
         status: 'OK',
-        message: 'SecureShare+ API is running',
+        message: 'PrivNote+ API is running',
         timestamp: new Date().toISOString(),
         version: '1.0.0'
     });
@@ -103,7 +103,7 @@ async function startServer() {
 
         // Start listening
         app.listen(PORT, () => {
-            console.log('\n🚀 SecureShare+ Backend Server');
+            console.log('\n🚀 PrivNote+ Backend Server');
             console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
             console.log(`   Server running on: http://localhost:${PORT}`);
             console.log(`   Health check: http://localhost:${PORT}/api/health`);

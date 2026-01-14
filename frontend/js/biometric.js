@@ -20,7 +20,7 @@ async function enrollBiometric(userEmail) {
         const publicKeyCredentialCreationOptions = {
             challenge: challenge,
             rp: {
-                name: "SecureShare+",
+                name: "PrivNote+",
                 id: window.location.hostname
             },
             user: {
@@ -49,16 +49,16 @@ async function enrollBiometric(userEmail) {
         console.log('✅ Biometric credential created:', credential);
 
         // Store credential ID (in production, send to server)
-        localStorage.setItem('biometric_credential_id', 
+        localStorage.setItem('biometric_credential_id',
             btoa(String.fromCharCode(...new Uint8Array(credential.rawId))));
-        
+
         localStorage.setItem('biometric_user_email', userEmail);
 
         return credential;
 
     } catch (error) {
         console.error('Biometric enrollment error:', error);
-        
+
         if (error.name === 'NotAllowedError') {
             throw new Error('Biometric access denied or cancelled');
         } else if (error.name === 'NotSupportedError') {
@@ -115,7 +115,7 @@ async function verifyBiometric(userEmail) {
 
     } catch (error) {
         console.error('Biometric verification error:', error);
-        
+
         if (error.name === 'NotAllowedError') {
             throw new Error('Biometric verification cancelled');
         } else {

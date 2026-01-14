@@ -1,7 +1,7 @@
 {
-  "name": "secureshare-backend",
+  "name": "privnote-backend",
   "version": "1.0.0",
-  "description": "Backend API for SecureShare+ encrypted note sharing",
+  "description": "Backend API for PrivNote+ encrypted note sharing",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

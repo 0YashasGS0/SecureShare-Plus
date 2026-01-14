@@ -1,11 +1,11 @@
 // ===== MAIN.JS - General UI interactions and utilities =====
 
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('SecureShare+ loaded successfully');
-    
+document.addEventListener('DOMContentLoaded', function () {
+    console.log('PrivNote+ loaded successfully');
+
     // Smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
+        anchor.addEventListener('click', function (e) {
             e.preventDefault();
             const target = document.querySelector(this.getAttribute('href'));
             if (target) {
@@ -27,22 +27,22 @@ document.addEventListener('DOMContentLoaded', function() {
  */
 function checkBrowserSupport() {
     const warnings = [];
-    
+
     // Check Web Crypto API (for encryption)
     if (!window.crypto || !window.crypto.subtle) {
         warnings.push('Web Crypto API not supported');
     }
-    
+
     // Check WebAuthn (for biometrics)
     if (!window.PublicKeyCredential) {
         warnings.push('WebAuthn not supported (biometric login unavailable)');
     }
-    
+
     // Check if running on HTTPS (required for WebAuthn)
     if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
         warnings.push('HTTPS required for full security features');
     }
-    
+
     if (warnings.length > 0) {
         console.warn('Browser compatibility issues:', warnings);
         // You can show a visual warning banner here
@@ -72,9 +72,9 @@ function showToast(message, type = 'info') {
         z-index: 10000;
         animation: slideIn 0.3s ease;
     `;
-    
+
     document.body.appendChild(toast);
-    
+
     setTimeout(() => {
         toast.style.animation = 'slideOut 0.3s ease';
         setTimeout(() => toast.remove(), 300);

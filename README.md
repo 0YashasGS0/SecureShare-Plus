@@ -1,4 +1,4 @@
-# SecureShare+ 🛡️
+# PrivNote+ 🛡️
 
 A secure, self-destructing note sharing application with biometric authentication and end-to-end encryption.
 
@@ -11,7 +11,7 @@ A secure, self-destructing note sharing application with biometric authenticatio
 - **Password Protection**: Encrypted password manager (Beta).
 
 ## Tech Stack
-- **Frontend**: HTML5, CSS3, Vanilla JavaScript
+- **Frontend**: HTML5, CSS3, Vanilla JavaScript (Premium UI)
 - **Backend**: Node.js, Express.js
 - **Database**: MySQL
 - **Security**: Web Crypto API, bcrypt, JSON Web Tokens (JWT)
@@ -65,4 +65,4 @@ simply access the application at:
 4.  **View Note**: The recipient clicks the link, verifies their identity (if required), and reads the message.
 
 ## Project Status
-✅ **Active Development** - Backend Integrated & Functional.
+✅ **Active Development** - PrivNote+ Rebrand & UI Upgrade Complete.
