@@ -99,6 +99,15 @@ async function loadNoteMetadata(noteId) {
 
         const data = await response.json();
 
+        // Handle Auth Error (Invalid/Expired Token)
+        if (response.status === 401 || response.status === 403) {
+            console.warn('Session expired or invalid token');
+            localStorage.removeItem('authToken');
+            // Redirect to login with proper return URL
+            window.location.href = `login.html?redirect=${encodeURIComponent(window.location.href)}`;
+            throw new Error('Redirecting to login...');
+        }
+
         if (response.status === 404 || response.status === 410) {
             throw new Error(data.error || 'Note not found or expired');
         }
@@ -304,6 +313,14 @@ async function verifyAndDecrypt(keyBase64) {
         });
 
         if (!contentResponse.ok) {
+            // Handle Auth Error (Invalid/Expired Token)
+            if (contentResponse.status === 401 || contentResponse.status === 403) {
+                console.warn('Session expired during decryption');
+                localStorage.removeItem('authToken');
+                window.location.href = `login.html?redirect=${encodeURIComponent(window.location.href)}`;
+                throw new Error('Redirecting to login...');
+            }
+
             const errData = await contentResponse.json();
             throw new Error(errData.error || 'Failed to retrieve note content. It may have been deleted.');
         }

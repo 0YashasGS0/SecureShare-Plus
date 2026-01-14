@@ -71,8 +71,16 @@ document.addEventListener('DOMContentLoaded', function () {
             showToast('Login successful!', 'success');
 
             // Redirect to create note page
+            // Redirect
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirectUrl = urlParams.get('redirect');
+
             setTimeout(() => {
-                window.location.href = 'create-note.html';
+                if (redirectUrl) {
+                    window.location.href = redirectUrl;
+                } else {
+                    window.location.href = 'create-note.html';
+                }
             }, 1000);
 
         } catch (error) {
